@@ -47,6 +47,8 @@ export class UsersService {
       throw new BadRequestException("User already exists");
     }
 
+    data.password = await argon2.hash(data.password);
+
     const user = await this.prisma.user.create({
       data,
     });

@@ -1,0 +1,21 @@
+{
+  "name": "turborepo",
+  "private": true,
+  "scripts": {
+    "start": "cd apps/server && NODE_ENV=production npm start",
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "prisma": "cd apps/server && npm run prisma"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "turbo": "^2.1.1",
+    "typescript": "^5.4.5"
+  },
+  "packageManager": "pnpm@8.15.6",
+  "engines": {
+    "node": ">=18"
+  }
+}

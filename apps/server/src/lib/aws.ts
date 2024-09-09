@@ -54,7 +54,8 @@ class AwsClient {
       });
 
       return result;
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       return null;
     }
   };

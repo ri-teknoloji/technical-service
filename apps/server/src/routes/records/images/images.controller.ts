@@ -1,14 +1,13 @@
 import {
   Controller,
   Delete,
-  Get,
   Param,
   Post,
   UploadedFiles,
   UseInterceptors,
 } from "@nestjs/common";
 import { ImagesService } from "./images.service";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FilesInterceptor } from "@nestjs/platform-express";
 import { Roles } from "@/decorators";
 import { UserRole } from "@/enums";
 
@@ -18,7 +17,7 @@ export class ImagesController {
   constructor(private imagesService: ImagesService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor("images"))
+  @UseInterceptors(FilesInterceptor("images"))
   create(
     @Param("recordId") recordId: string,
     @UploadedFiles() files: Express.Multer.File[]

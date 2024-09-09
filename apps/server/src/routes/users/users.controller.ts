@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto, UpdateUserDto } from "./users.dto";
-import { AuthGuard, RolesGuard } from "@/guards";
+import { AuthGuard } from "@/guards";
 import { GetUser, Roles } from "@/decorators";
 import { User } from "@prisma/client";
 import { UserRole } from "@/enums";

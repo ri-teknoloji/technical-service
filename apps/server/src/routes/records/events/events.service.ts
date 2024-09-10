@@ -1,3 +1,4 @@
+import { sendSMS } from "@/lib/netgsm";
 import { PrismaService } from "@/prisma";
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
@@ -38,6 +39,24 @@ export class EventsService {
         serviceRecordId: recordId,
       },
     });
+
+    const record = await this.prisma.serviceRecord.findUnique({
+      where: {
+        id: recordId,
+      },
+      include: {
+        User: true,
+      },
+    });
+
+    // Send SMS
+    if (record && record.User && record.User.phoneNumber) {
+      await sendSMS(
+        record.User.phoneNumber,
+        `Servis kaydınızda yeni bir güncelleme var: ${model.title}. Detaylar için siteyi ziyaret edin.`
+      );
+    }
+
     return model;
   };
 

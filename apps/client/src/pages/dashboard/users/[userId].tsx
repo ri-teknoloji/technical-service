@@ -80,7 +80,6 @@ const CreateOrViewUser = () => {
             isRequired
             defaultValue={user?.displayName}
             className="col-span-12 md:col-span-6"
-            variant="faded"
           />
 
           <Input
@@ -90,7 +89,6 @@ const CreateOrViewUser = () => {
             isRequired
             defaultValue={user?.email}
             className="col-span-12 md:col-span-6"
-            variant="faded"
           />
 
           <Input
@@ -100,7 +98,6 @@ const CreateOrViewUser = () => {
             isRequired
             defaultValue={user?.phoneNumber}
             className="col-span-12 md:col-span-6"
-            variant="faded"
           />
 
           <Select
@@ -111,7 +108,6 @@ const CreateOrViewUser = () => {
             onSelectionChange={handleRoleSelection}
             className="col-span-12 md:col-span-6"
             selectionMode="multiple"
-            variant="faded"
           >
             <SelectItem key={"admin"} value="admin">
               Admin
@@ -126,7 +122,6 @@ const CreateOrViewUser = () => {
             name="password"
             type="password"
             className="col-span-12 md:col-span-6"
-            variant="faded"
           />
 
           <div className="col-span-12">

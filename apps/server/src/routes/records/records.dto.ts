@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateRecordDto {
@@ -9,7 +10,10 @@ export class CreateRecordDto {
   productName: string;
 
   @IsString()
-  status: string;
+  description: string;
+
+  @IsString()
+  status: Prisma.ServiceRecordCreateInput["status"];
 }
 
 export class UpdateRecordDto {
@@ -20,5 +24,8 @@ export class UpdateRecordDto {
   userId: string;
 
   @IsString()
-  status: string;
+  description: string;
+
+  @IsString()
+  status: Prisma.ServiceRecordCreateInput["status"];
 }

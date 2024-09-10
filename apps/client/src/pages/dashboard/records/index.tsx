@@ -31,13 +31,13 @@ const Records = () => {
 
   if (!records || !users) return <Loading />;
 
-  const switchStatus = (status: string) => {
+  const switchStatus = (status: ServiceRecord["status"]) => {
     switch (status) {
       case "pending":
         return "Beklemede";
       case "completed":
         return "Tamamlandı";
-      case "in-progress":
+      case "in_progress":
         return "Devam Ediyor";
       case "shipped":
         return "Kargolandı";

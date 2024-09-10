@@ -16,5 +16,5 @@ export const generateKey = (len?: number) => {
 };
 
 export const getFileUrl = (file: string) => {
-  return config.CDN + file;
+  return config.BACKEND + "/api/files/" + file;
 };

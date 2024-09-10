@@ -1,6 +1,7 @@
 import { PrismaService } from "@/prisma";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateRecordDto, UpdateRecordDto } from "./records.dto";
+import { sendSMS } from "@/lib/netgsm";
 
 @Injectable()
 export class RecordsService {
@@ -57,6 +58,14 @@ export class RecordsService {
       data,
     });
 
+    // Send SMS
+    if (user && user.phoneNumber) {
+      await sendSMS(
+        user.phoneNumber,
+        `Servis kaydınız oluşturuldu: ${record.productName}. Detaylar için siteyi ziyaret ediniz.`
+      );
+    }
+
     return record;
   };
 
@@ -95,6 +104,9 @@ export class RecordsService {
     return this.prisma.serviceRecord.delete({
       where: {
         id,
+      },
+      include: {
+        events: true,
       },
     });
   };

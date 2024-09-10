@@ -8,9 +8,10 @@ import { UsersModule } from "@/routes/users";
 import { AuthModule } from "@/routes/auth";
 import { TokensModule } from "@/routes/tokens";
 import { RecordsModule } from "@/routes/records";
+import { FilesModule } from "@/routes/files";
 
 @Module({
-  imports: [UsersModule, AuthModule, TokensModule, RecordsModule],
+  imports: [UsersModule, AuthModule, TokensModule, RecordsModule, FilesModule],
   controllers: [ApiController],
   providers: [],
 })

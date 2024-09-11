@@ -19,9 +19,12 @@ export const httpError = async (error: unknown) => {
 
   if (error.response.status === 401) {
     toast.error("Tekrar giriş yapmanız için yönlendiriliyorsunuz...");
-    localStorage.removeItem("token");
     await sleep(2000);
     location.replace("/login");
+  }
+
+  if (error.response.status === 403) {
+    location.replace("/forbidden");
   }
 
   let errorMessage = "Something went wrong!";

@@ -24,11 +24,13 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
+  @Roles([UserRole.Admin])
   async find(@GetUser() user: User) {
     return await this.usersService.find(user);
   }
 
   @Get(":id")
+  @Roles([UserRole.Admin])
   async findOne(@GetUser() user: User, @Param("id") id: string) {
     return await this.usersService.findOne(user, id);
   }
@@ -46,6 +48,7 @@ export class UsersController {
   }
 
   @Delete(":id")
+  @Roles([UserRole.Admin])
   async remove(@Param("id") id: string, @GetUser() user: User) {
     return await this.usersService.remove(user, id);
   }

@@ -1,5 +1,5 @@
 const Dashboard = () => {
-  return <div className="grid h-screen place-items-center">Dashboard</div>;
+  return <div>Dashboard</div>;
 };
 
 export default Dashboard;

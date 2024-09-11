@@ -156,26 +156,14 @@ const SidebarToggler = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
 };
 
 const UserDisplay = () => {
-  const { data: me } = useHttp<User>("/auth/me", {
-    onError: () => null,
-  });
+  const { data: me } = useHttp<User>("/auth/me");
 
   const logout = () => {
     localStorage.removeItem("token");
     location.reload();
   };
 
-  if (!me)
-    return (
-      <Button
-        as={Link}
-        to={"/login"}
-        startContent={<UserIcon />}
-        color="primary"
-      >
-        <strong className="mt-1">Giriş Yap</strong>
-      </Button>
-    );
+  if (!me) return null;
 
   return (
     <Dropdown>

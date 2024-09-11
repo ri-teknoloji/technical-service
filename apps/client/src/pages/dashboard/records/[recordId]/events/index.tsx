@@ -70,7 +70,7 @@ const RecordEvents = () => {
     <div className="grid gap-3">
       <Card className="p-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-lg font-bold">Servis Kayıtları </h1>
+          <h1 className="text-lg font-bold">Olaylar</h1>
           <div>
             <Input
               placeholder="Ara..."

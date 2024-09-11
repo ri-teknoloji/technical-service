@@ -1,4 +1,5 @@
 import config from "@/config";
+import { ServiceRecord } from "@/types";
 
 export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -17,4 +18,23 @@ export const generateKey = (len?: number) => {
 
 export const getFileUrl = (file: string) => {
   return config.BACKEND + "/api/files/" + file;
+};
+
+export const translateRecordStatus = (status: ServiceRecord["status"]) => {
+  switch (status) {
+    case "pending":
+      return "Beklemede";
+    case "waiting_for_parts":
+      return "Parça Tedarik Ediliyor";
+    case "in_progress":
+      return "Devam Ediyor";
+    case "completed":
+      return "Tamamlandı";
+    case "shipped":
+      return "Kargolandı";
+    case "delivered":
+      return "Teslim Edildi";
+    default:
+      return "Bilinmiyor";
+  }
 };

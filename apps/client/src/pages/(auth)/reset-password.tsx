@@ -1,12 +1,11 @@
 import { CenteredCard } from "@/components/CenteredCard";
-import { PasswordInput } from "@/components/PasswordInput";
 import { http, httpError } from "@/lib/http";
 import { sleep } from "@/utils";
 import { Button, Divider, Input } from "@nextui-org/react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-const Login = () => {
+const ResetPassword = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -14,12 +13,17 @@ const Login = () => {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
 
+    if (data.password !== data.passwordConfirmation) {
+      return toast.error("Şifreler uyuşmuyor!");
+    }
+
     try {
-      const res = await http.post("/auth/login", data);
-      localStorage.setItem("token", res.data.token);
-      toast.success("Giriş başarılı!");
-      await sleep(1000);
-      location.replace("/");
+      await http.post("/auth/reset-password", data);
+      toast.success("Şifreniz sıfırlandı!", {
+        description: "Devam edebilmek için yönlendiriliyorsunuz...",
+      });
+      await sleep(3000);
+      navigate("/login");
     } catch (error) {
       httpError(error);
     }
@@ -28,44 +32,37 @@ const Login = () => {
   return (
     <CenteredCard>
       <form onSubmit={handleSubmit} className="grid gap-3">
+        <Input label="SMS Kodu" name="token" type="text" isRequired />
+
+        <Input label="Yeni Şifre" name="password" type="password" isRequired />
+
         <Input
-          label="Mail / Kullanıcı Adı"
-          name="username"
-          type="text"
-          placeholder="Mail / Kullanıcı Adı"
+          label="Yeni Şifre Tekrar"
+          name="passwordConfirmation"
+          type="password"
           isRequired
         />
 
-        <PasswordInput label="Şifre" name="password" isRequired />
-
         <Button type="submit" color="primary">
-          Giriş Yap
+          Şifremi Sıfırla
         </Button>
       </form>
       <Divider className="my-5" />
-
       <div className="grid gap-3">
-        <p className="text-center">
-          Hesabınız yok mu?{" "}
-          <button
-            onClick={() => navigate("/register")}
-            className="text-primary"
-          >
-            Kayıt ol
-          </button>
-        </p>
-
+        <Button as={Link} to={"/login"} color="secondary" variant="light">
+          <strong>Giriş Yap</strong>
+        </Button>
         <Button
           as={Link}
           to={"/forget-password"}
-          color="danger"
+          color="secondary"
           variant="light"
         >
-          <strong>Şifremi Unuttum</strong>
+          <strong>SMS Kodum yok</strong>
         </Button>
       </div>
     </CenteredCard>
   );
 };
 
-export default Login;
+export default ResetPassword;

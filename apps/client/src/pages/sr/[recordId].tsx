@@ -1,6 +1,6 @@
 import { useHttp } from "@/hooks/useHttp";
 import { Event, ServiceRecord } from "@/types";
-import { getFileUrl } from "@/utils";
+import { getFileUrl, translateRecordStatus } from "@/utils";
 import {
   Card,
   CardBody,
@@ -13,7 +13,7 @@ import {
   Table,
   CardHeader,
   Input,
-  Textarea,
+  cn,
 } from "@nextui-org/react";
 import { CheckIcon } from "lucide-react";
 import { Key } from "react";
@@ -39,10 +39,12 @@ const ViewRecord = () => {
       <Navbar />
       <main className="container my-10 min-h-screen">
         <div className="grid gap-3">
-          <DisplayDetails record={record} />
           <Stepper status={record.status} />
-          <EventsTable />
-          <ImagesShowcase images={record.images} />
+          <DisplayDetails record={record} />
+          <div className="hidden">
+            <EventsTable />
+            <ImagesShowcase images={record.images} />
+          </div>
         </div>
       </main>
     </>
@@ -64,7 +66,7 @@ const DisplayDetails = ({ record }: DisplayDetailsProps) => {
         />
         <Input
           label="Servis Durumu"
-          value={record.status}
+          value={translateRecordStatus(record.status)}
           className="col-span-12 md:col-span-6"
         />
         <Input
@@ -76,11 +78,6 @@ const DisplayDetails = ({ record }: DisplayDetailsProps) => {
           label="Güncellenme Tarihi"
           value={new Date(record.updatedAt).toLocaleString()}
           className="col-span-12 md:col-span-6"
-        />
-        <Textarea
-          label="Açıklama"
-          value={record.description}
-          className="col-span-12"
         />
       </CardBody>
     </Card>
@@ -223,16 +220,21 @@ const Stepper = ({ status }: StepperProps) => {
     <Card>
       <Title title="Servis Durumu" />
       <CardBody>
-        <div className="flex flex-wrap items-center justify-between gap-5">
+        <div className="grid grid-cols-12 place-items-center gap-5">
           {steps.map((step, index) => (
             <div
               key={step.key}
-              className={`flex items-center gap-3 ${
-                index <= currentStep ? "text-primary" : "text-gray-300"
-              }`}
+              className={
+                (cn(
+                  `flex items-center gap-3 ${
+                    index <= currentStep ? "text-primary" : "text-gray-300"
+                  }`,
+                ),
+                "col-span-12 md:col-span-3")
+              }
             >
               <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
+                className={`mx-auto flex h-10 w-10 items-center justify-center rounded-full border-2 ${
                   index <= currentStep
                     ? "border-primary bg-primary"
                     : "border-gray-300"
@@ -244,7 +246,7 @@ const Stepper = ({ status }: StepperProps) => {
                   <span>{index + 1}</span>
                 )}
               </div>
-              <p>{step.title}</p>
+              <p className="mt-2">{step.title}</p>
             </div>
           ))}
         </div>

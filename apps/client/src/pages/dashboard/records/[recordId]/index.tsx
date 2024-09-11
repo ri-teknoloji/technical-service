@@ -17,7 +17,7 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { AxiosProgressEvent } from "axios";
-import { FileIcon, TrashIcon } from "lucide-react";
+import { FileIcon, Package2Icon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -39,7 +39,13 @@ const CreateOrViewRecord = () => {
     const formData = new FormData(e.currentTarget);
     const data: any = Object.fromEntries(formData.entries());
 
-    data.userId = users.find((user) => user.email === data.userId)?.id;
+    const user = users.find((user) => user.id === data.userId);
+    if (!user) return toast.error("Kullanıcı bulunamadı!");
+
+    data.userId = user.id;
+    data.estimatedCost = parseFloat(data.estimatedCost);
+    data.requiredParts = data.requiredParts.split("\n").filter(Boolean);
+    data.estimatedDelivery = new Date(data.estimatedDelivery);
 
     try {
       const { data: rec } = isNew
@@ -119,6 +125,17 @@ const CreateOrViewRecord = () => {
                   </div>
                 ),
               }}
+              description={
+                <p>
+                  Kullanıcıyı seçmek için e-posta adresini yazın.
+                  <Link
+                    to="/dashboard/users/new"
+                    className="mx-1 text-primary-500"
+                  >
+                    Yeni kullanıcı oluştur
+                  </Link>
+                </p>
+              }
             >
               {users.map((user) => (
                 <AutocompleteItem
@@ -140,14 +157,6 @@ const CreateOrViewRecord = () => {
               className="col-span-12 md:col-span-6"
             />
 
-            <Textarea
-              label="Açıklama"
-              name="description"
-              isRequired
-              defaultValue={record?.description}
-              className="col-span-12"
-            />
-
             <Select
               label="Durum"
               name="status"
@@ -156,10 +165,71 @@ const CreateOrViewRecord = () => {
               isRequired
             >
               <SelectItem key={"pending"}>Beklemede</SelectItem>
+              <SelectItem key={"waiting_for_parts"}>
+                Parça Tedarik Ediliyor
+              </SelectItem>
               <SelectItem key={"in_progress"}>İşlemde</SelectItem>
-              <SelectItem key={"shipped"}>Kargoya Verildi</SelectItem>
               <SelectItem key={"completed"}>Tamamlandı</SelectItem>
+              <SelectItem key={"shipped"}>Kargoya Verildi</SelectItem>
+              <SelectItem key={"delivered"}>Teslim Edildi</SelectItem>
             </Select>
+
+            <Input
+              label="Ürün IMEI Numarası"
+              name="productImeiNumber"
+              type="text"
+              isRequired
+              defaultValue={record?.productImeiNumber}
+              className="col-span-12 md:col-span-6"
+            />
+
+            <Input
+              label="Ürün Seri Numarası"
+              name="productSerialNumber"
+              type="text"
+              isRequired
+              defaultValue={record?.productSerialNumber}
+              className="col-span-12 md:col-span-6"
+            />
+
+            <Input
+              label="Tahmin Edilen Fiyat"
+              name="estimatedCost"
+              type="number"
+              isRequired
+              defaultValue={record?.estimatedCost.toString()}
+              className="col-span-12 md:col-span-6"
+            />
+
+            <Input
+              label="Tahmini teslim tarihi"
+              name="estimatedDelivery"
+              type="date"
+              isRequired
+              defaultValue={
+                new Date(record?.estimatedDelivery || new Date())
+                  .toISOString()
+                  .split("T")[0]
+              }
+              className="col-span-12 md:col-span-6"
+            />
+
+            <Textarea
+              label="Kullanılan Parçalar"
+              name="requiredParts"
+              isRequired
+              defaultValue={record?.requiredParts.join("\n")}
+              className="col-span-12"
+              description="Her satıra bir parça ekleyin."
+            />
+
+            <Textarea
+              label="Açıklama"
+              name="description"
+              isRequired
+              defaultValue={record?.description}
+              className="col-span-12"
+            />
 
             <div className="col-span-12">
               <Button type="submit" color="primary">
@@ -184,8 +254,18 @@ const CreateOrViewRecord = () => {
                 color="danger"
                 startContent={<TrashIcon />}
                 onClick={handleDelete}
+                variant="light"
               >
                 <strong className="mt-1">Sil</strong>
+              </Button>
+              <Button
+                as={Link}
+                to={`/dashboard/records/${record.id}/deliver`}
+                color="primary"
+                startContent={<Package2Icon />}
+                variant="light"
+              >
+                <strong className="mt-1">Teslimet Ekranı</strong>
               </Button>
             </>
           )}

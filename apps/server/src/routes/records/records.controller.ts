@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -28,11 +30,26 @@ export class RecordsController {
     return this.recordsService.findOne(id);
   }
 
+  @Get(":id/delivery-code")
+  @UseGuards(AuthGuard)
+  @Roles([UserRole.Admin])
+  deliverCode(@Param("id") id: string) {
+    return this.recordsService.getCode(id);
+  }
+
   @Post()
   @UseGuards(AuthGuard)
   @Roles([UserRole.Admin])
   create(@Body() data: CreateRecordDto) {
     return this.recordsService.create(data);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post(":id/verify")
+  @UseGuards(AuthGuard)
+  @Roles([UserRole.Admin])
+  verify(@Param("id") id: string, @Body("code") code: string) {
+    return this.recordsService.verifyCode(id, code);
   }
 
   @Put(":id")

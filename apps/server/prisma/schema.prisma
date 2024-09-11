@@ -58,22 +58,29 @@ model Event {
 
 enum ServiceRecordStatus {
     pending
+    waiting_for_parts
     in_progress
-    shipped
     completed
+    shipped
+    delivered
 }
 
 model ServiceRecord {
-    id          String              @id @default(uuid())
-    productName String
-    description String              @default("")
-    images      String[]            @default([])
-    status      ServiceRecordStatus @default(pending)
-    events      Event[]
-    createdAt   DateTime            @default(now())
-    updatedAt   DateTime            @updatedAt
-    userId      String
-    User        User                @relation(fields: [userId], references: [id])
+    id                  String              @id @default(uuid())
+    productName         String
+    productImeiNumber   String
+    productSerialNumber String
+    description         String
+    images              String[]
+    requiredParts       String[]            @default([])
+    status              ServiceRecordStatus @default(pending)
+    events              Event[]
+    createdAt           DateTime            @default(now())
+    updatedAt           DateTime            @updatedAt
+    userId              String
+    User                User                @relation(fields: [userId], references: [id])
+    estimatedDelivery   DateTime
+    estimatedCost       Float
 
     @@map("service_records")
 }

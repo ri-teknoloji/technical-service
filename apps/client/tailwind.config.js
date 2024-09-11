@@ -11,7 +11,7 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "1.5rem",
+      padding: ".5rem",
     },
     extend: {},
   },

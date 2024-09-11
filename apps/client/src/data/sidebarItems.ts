@@ -1,4 +1,4 @@
-import { Home, Users, Archive, Settings } from "lucide-react";
+import { Home, Users, Archive, Settings, HelpCircleIcon } from "lucide-react";
 
 export const sidebarItems = [
   {
@@ -23,6 +23,12 @@ export const sidebarItems = [
     label: "Ayarlar",
     href: "/dashboard/settings",
     icon: Settings,
+    canCreate: false,
+  },
+  {
+    label: "Yardım",
+    href: "/dashboard/help",
+    icon: HelpCircleIcon,
     canCreate: false,
   },
 ];

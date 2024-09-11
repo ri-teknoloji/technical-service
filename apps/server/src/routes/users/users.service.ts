@@ -8,6 +8,7 @@ import { User } from "@prisma/client";
 import { CreateUserDto, UpdateUserDto } from "./users.dto";
 import { UserRole } from "@/enums";
 import argon2 from "argon2";
+import { randomString } from "@/utils";
 
 @Injectable()
 export class UsersService {
@@ -47,7 +48,7 @@ export class UsersService {
       throw new BadRequestException("User already exists");
     }
 
-    data.password = await argon2.hash(data.password);
+    data.password = await argon2.hash(data.password || randomString(16));
 
     const user = await this.prisma.user.create({
       data,

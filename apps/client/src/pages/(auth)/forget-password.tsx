@@ -1,12 +1,11 @@
 import { CenteredCard } from "@/components/CenteredCard";
-import { PasswordInput } from "@/components/PasswordInput";
 import { http, httpError } from "@/lib/http";
 import { sleep } from "@/utils";
 import { Button, Divider, Input } from "@nextui-org/react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-const Login = () => {
+const ForgetPassword = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -15,11 +14,12 @@ const Login = () => {
     const data = Object.fromEntries(formData.entries());
 
     try {
-      const res = await http.post("/auth/login", data);
-      localStorage.setItem("token", res.data.token);
-      toast.success("Giriş başarılı!");
-      await sleep(1000);
-      location.replace("/");
+      await http.post("/auth/forget-password", data);
+      toast.success("Şifrenizi sıfırlamak için sms gönderildi!", {
+        description: "Devam edebilmek için yönlendiriiliyorsunuz...",
+      });
+      await sleep(3000);
+      navigate("/reset-password");
     } catch (error) {
       httpError(error);
     }
@@ -36,36 +36,26 @@ const Login = () => {
           isRequired
         />
 
-        <PasswordInput label="Şifre" name="password" isRequired />
-
         <Button type="submit" color="primary">
-          Giriş Yap
+          Kod Gönder
         </Button>
       </form>
       <Divider className="my-5" />
-
       <div className="grid gap-3">
-        <p className="text-center">
-          Hesabınız yok mu?{" "}
-          <button
-            onClick={() => navigate("/register")}
-            className="text-primary"
-          >
-            Kayıt ol
-          </button>
-        </p>
-
+        <Button as={Link} to={"/login"} color="secondary" variant="light">
+          <strong>Giriş Yap</strong>
+        </Button>
         <Button
           as={Link}
-          to={"/forget-password"}
-          color="danger"
+          to={"/reset-password"}
+          color="secondary"
           variant="light"
         >
-          <strong>Şifremi Unuttum</strong>
+          <strong>SMS Kodum var</strong>
         </Button>
       </div>
     </CenteredCard>
   );
 };
 
-export default Login;
+export default ForgetPassword;

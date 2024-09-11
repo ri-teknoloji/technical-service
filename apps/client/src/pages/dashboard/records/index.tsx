@@ -1,6 +1,7 @@
 import { Loading } from "@/components/Loading";
 import { useHttp } from "@/hooks/useHttp";
 import { ServiceRecord, User } from "@/types";
+import { translateRecordStatus } from "@/utils";
 import {
   Card,
   Input,
@@ -31,21 +32,6 @@ const Records = () => {
 
   if (!records || !users) return <Loading />;
 
-  const switchStatus = (status: ServiceRecord["status"]) => {
-    switch (status) {
-      case "pending":
-        return "Beklemede";
-      case "completed":
-        return "Tamamlandı";
-      case "in_progress":
-        return "Devam Ediyor";
-      case "shipped":
-        return "Kargolandı";
-      default:
-        return "Bilinmiyor";
-    }
-  };
-
   const columns = [
     {
       key: "user",
@@ -75,7 +61,7 @@ const Records = () => {
       key: record.id,
       user: user ? user.displayName : "Bilinmiyor",
       productName: record.productName,
-      status: switchStatus(record.status),
+      status: translateRecordStatus(record.status),
       startDate: new Date(record.createdAt).toLocaleString("tr-TR"),
       updatedAt: new Date(record.updatedAt).toLocaleString("tr-TR"),
     };
@@ -90,7 +76,9 @@ const Records = () => {
         user?.email.toLowerCase().includes(value.toLowerCase()) ||
         user?.phoneNumber.toLowerCase().includes(value.toLowerCase()) ||
         record.productName.toLowerCase().includes(value.toLowerCase()) ||
-        switchStatus(record.status).toLowerCase().includes(value.toLowerCase())
+        translateRecordStatus(record.status)
+          .toLowerCase()
+          .includes(value.toLowerCase())
       );
     });
 

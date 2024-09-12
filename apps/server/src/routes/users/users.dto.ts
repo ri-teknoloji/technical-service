@@ -15,14 +15,13 @@ export class CreateUserDto {
 
   @IsString()
   @IsOptional()
-  password: string;
+  password?: string;
 
   @IsString()
   displayName: string;
 
   @IsString({ each: true })
-  @IsOptional()
-  roles: Prisma.UserCreateInput["roles"][];
+  roles: Prisma.UserCreateInput["roles"];
 }
 
 export class UpdateUserDto extends CreateUserDto {}

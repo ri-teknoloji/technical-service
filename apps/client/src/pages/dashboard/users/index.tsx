@@ -68,7 +68,7 @@ const Users = () => {
     const filtered = users.filter(
       (user) =>
         user.displayName.toLowerCase().includes(value.toLowerCase()) ||
-        user.email.toLowerCase().includes(value.toLowerCase()) ||
+        user.email?.toLowerCase().includes(value.toLowerCase()) ||
         user.phoneNumber.toLowerCase().includes(value.toLowerCase()),
     );
     setFilteredUsers(filtered);

@@ -44,7 +44,7 @@ const CreateOrViewUser = () => {
     console.log(data);
 
     data.roles = userRoles;
-    delete data.redirect;
+    if (data.email === "") delete data.email;
 
     try {
       isNew
@@ -105,8 +105,7 @@ const CreateOrViewUser = () => {
               label="E-Mail"
               name="email"
               type="email"
-              isRequired
-              defaultValue={user?.email}
+              defaultValue={user?.email || ""}
               className="col-span-12 md:col-span-6"
             />
 
@@ -131,6 +130,9 @@ const CreateOrViewUser = () => {
               >
                 <SelectItem key={"admin"} value="admin">
                   Admin
+                </SelectItem>
+                <SelectItem key={"technician"} value="technician">
+                  Teknisyen
                 </SelectItem>
                 <SelectItem key={"user"} value="user">
                   Kullanıcı
@@ -157,14 +159,16 @@ const CreateOrViewUser = () => {
           </form>
         </CardBody>
         <CardFooter className="justify-end">
-          <Button
-            color="danger"
-            variant="light"
-            onClick={handleDelete}
-            startContent={<Trash2Icon />}
-          >
-            <strong className="mt-1">Sil</strong>
-          </Button>
+          {!isNew && (
+            <Button
+              color="danger"
+              variant="light"
+              onClick={handleDelete}
+              startContent={<Trash2Icon />}
+            >
+              <strong className="mt-1">Sil</strong>
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </div>

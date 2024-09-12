@@ -19,13 +19,13 @@ export class AuthService {
 
     // if user not found
     if (!user) {
-      throw new BadRequestException("Invalid credentials");
+      throw new BadRequestException("Kullanıcı bulunamadı");
     }
 
     // verify password
-    const isValid = await argon.verify(user?.password, body.password);
+    const isValid = await argon.verify(user.password, body.password);
     if (!isValid) {
-      throw new BadRequestException("Invalid credentials");
+      throw new BadRequestException("Kullanıcı adı veya şifre hatalı");
     }
 
     const freshToken = await this.prisma.token.create({

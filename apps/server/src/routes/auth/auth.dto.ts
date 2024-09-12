@@ -27,6 +27,7 @@ export class RegisterDto {
     example: "test@example.com",
   })
   @IsEmail()
+  @IsOptional()
   email: string;
 
   @ApiProperty()

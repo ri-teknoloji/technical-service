@@ -39,10 +39,16 @@ const CreateOrViewRecord = () => {
     const formData = new FormData(e.currentTarget);
     const data: any = Object.fromEntries(formData.entries());
 
-    const user = users.find((user) => user.id === data.userId);
+    const user = users.find((user) => user.phoneNumber === data.userId);
     if (!user) return toast.error("Kullanıcı bulunamadı!");
 
+    const technician = users.find(
+      (user) => user.phoneNumber === data.technicianId,
+    );
+    if (!technician) return toast.error("Teknisyen bulunamadı!");
+
     data.userId = user.id;
+    data.technicianId = technician.id;
     data.estimatedCost = parseFloat(data.estimatedCost);
     data.requiredParts = data.requiredParts.split("\n").filter(Boolean);
     data.estimatedDelivery = new Date(data.estimatedDelivery);
@@ -100,53 +106,21 @@ const CreateOrViewRecord = () => {
             )}
           </div>
           <form onSubmit={handleSubmit} className="grid grid-cols-12 gap-3">
-            <Autocomplete
-              label="Kullanıcı"
+            <UserInput
               name="userId"
-              type="text"
-              className="col-span-12 md:col-span-6"
+              label="Kullanıcı"
               isRequired
-              defaultSelectedKey={record?.userId}
-              listboxProps={{
-                emptyContent: (
-                  <div className="grid gap-2 text-center">
-                    <p className="text-lg font-bold">
-                      Hiçbir kullanıcı bulunamadı. Yeni bir kullanıcı oluşturun.
-                    </p>
-                    <Button
-                      as={Link}
-                      to="/dashboard/users/new"
-                      color="primary"
-                      fullWidth
-                      size="sm"
-                    >
-                      <strong>Yeni Kullanıcı Oluştur</strong>
-                    </Button>
-                  </div>
-                ),
-              }}
-              description={
-                <p>
-                  Kullanıcıyı seçmek için e-posta adresini yazın.
-                  <Link
-                    to="/dashboard/users/new"
-                    className="mx-1 text-primary-500"
-                  >
-                    Yeni kullanıcı oluştur
-                  </Link>
-                </p>
-              }
-            >
-              {users.map((user) => (
-                <AutocompleteItem
-                  key={user.id}
-                  value={user.id}
-                  textValue={user.email}
-                >
-                  {user.displayName} ({user.email}) {user.phoneNumber}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
+              defaultValue={record?.userId}
+              items={users}
+            />
+
+            <UserInput
+              name="technicianId"
+              label="Teknisyen"
+              isRequired
+              defaultValue={record?.technicianId}
+              items={users.filter((u) => u.roles.includes("technician"))}
+            />
 
             <Input
               label="Ürün Adı"
@@ -178,8 +152,7 @@ const CreateOrViewRecord = () => {
               label="Ürün IMEI Numarası"
               name="productImeiNumber"
               type="text"
-              isRequired
-              defaultValue={record?.productImeiNumber}
+              defaultValue={record?.productImeiNumber || ""}
               className="col-span-12 md:col-span-6"
             />
 
@@ -187,8 +160,7 @@ const CreateOrViewRecord = () => {
               label="Ürün Seri Numarası"
               name="productSerialNumber"
               type="text"
-              isRequired
-              defaultValue={record?.productSerialNumber}
+              defaultValue={record?.productSerialNumber || ""}
               className="col-span-12 md:col-span-6"
             />
 
@@ -217,7 +189,6 @@ const CreateOrViewRecord = () => {
             <Textarea
               label="Kullanılan Parçalar"
               name="requiredParts"
-              isRequired
               defaultValue={record?.requiredParts.join("\n")}
               className="col-span-12"
               description="Her satıra bir parça ekleyin."
@@ -376,5 +347,64 @@ const ViewImages = ({ record }: ViewImagesProps) => {
         </div>
       </CardBody>
     </Card>
+  );
+};
+
+interface UserInputProps {
+  name: string;
+  label: string;
+  isRequired?: boolean;
+  defaultValue?: string;
+  items: User[];
+}
+
+const UserInput = (props: UserInputProps) => {
+  const { items, name, label, isRequired, defaultValue } = props;
+
+  return (
+    <Autocomplete
+      label={label}
+      name={name}
+      type="text"
+      className="col-span-12 md:col-span-6"
+      isRequired={isRequired}
+      defaultSelectedKey={defaultValue}
+      listboxProps={{
+        emptyContent: (
+          <div className="grid gap-2 text-center">
+            <p className="text-lg font-bold">
+              Hiçbir kullanıcı bulunamadı. Yeni bir kullanıcı oluşturun.
+            </p>
+            <Button
+              as={Link}
+              to="/dashboard/users/new"
+              color="primary"
+              fullWidth
+              size="sm"
+            >
+              <strong>Yeni Kullanıcı Oluştur</strong>
+            </Button>
+          </div>
+        ),
+      }}
+      description={
+        <p>
+          Kullanıcıyı seçmek için e-posta adresini yazın.
+          <Link to="/dashboard/users/new" className="mx-1 text-primary-500">
+            Yeni kullanıcı oluştur
+          </Link>
+        </p>
+      }
+    >
+      {items.map((user) => (
+        <AutocompleteItem
+          key={user.id}
+          value={user.id}
+          textValue={user.phoneNumber}
+        >
+          {user.displayName} ({user.email}) {user.phoneNumber}
+        </AutocompleteItem>
+      ))}
+    </Autocomplete>
   );
 };

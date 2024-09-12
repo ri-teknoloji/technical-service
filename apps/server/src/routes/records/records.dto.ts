@@ -1,18 +1,29 @@
 import { Prisma } from "@prisma/client";
-import { IsDateString, IsNumber, IsString, Min } from "class-validator";
+import {
+  IsDateString,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from "class-validator";
 
 export class CreateRecordDto {
   @IsString()
   userId: string;
 
   @IsString()
+  technicianId: string;
+
+  @IsString()
   productName: string;
 
   @IsString()
-  productImeiNumber: string;
+  @IsOptional()
+  productImeiNumber?: string;
 
   @IsString()
-  productSerialNumber: string;
+  @IsOptional()
+  productSerialNumber?: string;
 
   @IsString()
   description: string;

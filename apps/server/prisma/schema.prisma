@@ -13,19 +13,26 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+    user
+    admin
+    technician
+}
+
 model User {
-    id          String   @id @default(uuid())
-    username    String   @unique @default(cuid())
-    email       String   @unique
-    phoneNumber String   @unique
+    id          String     @id @default(uuid())
+    username    String     @unique @default(cuid())
+    email       String?    @unique
+    phoneNumber String     @unique
     password    String
     displayName String
-    roles       String[] @default(["user"])
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    roles       UserRole[] @default([user])
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
 
-    Token         Token[]
-    ServiceRecord ServiceRecord[]
+    Token                     Token[]
+    ServiceRecord             ServiceRecord[] @relation(name: "ServiceRecordUser")
+    ServiceRecordAsTechnician ServiceRecord[] @relation(name: "ServiceRecordTechnician")
 
     @@map("users")
 }
@@ -68,8 +75,8 @@ enum ServiceRecordStatus {
 model ServiceRecord {
     id                  String              @id @default(uuid())
     productName         String
-    productImeiNumber   String
-    productSerialNumber String
+    productImeiNumber   String?
+    productSerialNumber String?
     description         String
     images              String[]
     requiredParts       String[]            @default([])
@@ -78,7 +85,9 @@ model ServiceRecord {
     createdAt           DateTime            @default(now())
     updatedAt           DateTime            @updatedAt
     userId              String
-    User                User                @relation(fields: [userId], references: [id])
+    User                User                @relation(name: "ServiceRecordUser", fields: [userId], references: [id])
+    technicianId        String
+    Technician          User                @relation(name: "ServiceRecordTechnician", fields: [technicianId], references: [id])
     estimatedDelivery   DateTime
     estimatedCost       Float
 

@@ -8,10 +8,4 @@ export class CreateEventDto {
   description: string;
 }
 
-export class UpdateEventDto {
-  @IsString()
-  title: string;
-
-  @IsString()
-  description: string;
-}
+export class UpdateEventDto extends CreateEventDto {}

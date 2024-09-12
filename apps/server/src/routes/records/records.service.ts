@@ -124,7 +124,6 @@ export class RecordsService {
   };
 
   create = async (data: CreateRecordDto) => {
-    console.log(data);
     const user = await this.prisma.user.findUnique({
       where: {
         id: data.userId,

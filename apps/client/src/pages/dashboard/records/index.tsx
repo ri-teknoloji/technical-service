@@ -73,7 +73,7 @@ const Records = () => {
       const user = users.find((user) => user.id === record.userId);
       return (
         user?.displayName.toLowerCase().includes(value.toLowerCase()) ||
-        user?.email.toLowerCase().includes(value.toLowerCase()) ||
+        user?.email?.toLowerCase().includes(value.toLowerCase()) ||
         user?.phoneNumber.toLowerCase().includes(value.toLowerCase()) ||
         record.productName.toLowerCase().includes(value.toLowerCase()) ||
         translateRecordStatus(record.status)

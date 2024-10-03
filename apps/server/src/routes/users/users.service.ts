@@ -48,7 +48,6 @@ export class UsersService {
     const isAdmin = user.roles.includes(UserRole.admin);
     const doc = isAdmin
       ? await this.prisma.user.findFirst({
-          include: { ServiceRecord: true, Token: true },
           where: { id },
         })
       : await this.prisma.user.findFirst({ where: { id: user.id } });

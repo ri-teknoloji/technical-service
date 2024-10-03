@@ -30,9 +30,7 @@ model User {
     createdAt   DateTime   @default(now())
     updatedAt   DateTime   @updatedAt
 
-    Token                     Token[]
-    ServiceRecord             ServiceRecord[] @relation(name: "ServiceRecordUser")
-    ServiceRecordAsTechnician ServiceRecord[] @relation(name: "ServiceRecordTechnician")
+    Token Token[]
 
     @@map("users")
 }
@@ -51,14 +49,13 @@ model Token {
 }
 
 model Event {
-    id              String        @id @default(uuid())
+    id              String   @id @default(uuid())
     title           String
     description     String
-    createdAt       DateTime      @default(now())
-    updatedAt       DateTime      @updatedAt
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
     // ServiceRecord relation
     serviceRecordId String
-    ServiceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id])
 
     @@map("events")
 }
@@ -78,17 +75,16 @@ model ServiceRecord {
     images         String[]
     requiredParts  String[]            @default([])
     status         ServiceRecordStatus @default(pending)
-    events         Event[]
+    events         String[]
     trackingNumber String?             @unique
 
     productName         String
     productImeiNumber   String?
     productSerialNumber String?
 
-    userId            String
-    User              User      @relation(name: "ServiceRecordUser", fields: [userId], references: [id])
-    technicianId      String
-    Technician        User      @relation(name: "ServiceRecordTechnician", fields: [technicianId], references: [id])
+    userId       String
+    technicianId String
+
     estimatedDelivery DateTime?
     estimatedCost     Float?
 

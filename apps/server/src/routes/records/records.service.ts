@@ -120,10 +120,13 @@ export class RecordsService {
       throw new NotFoundException("Servis kaydı bulunamadı.");
     }
 
-    return this.prisma.serviceRecord.delete({
-      include: {
-        events: true,
+    await this.prisma.event.deleteMany({
+      where: {
+        serviceRecordId: id,
       },
+    });
+
+    return this.prisma.serviceRecord.delete({
       where: {
         id,
       },

@@ -1,10 +1,10 @@
 import axios from "axios";
 import { toast } from "sonner";
 
-import { VITE_API_URL } from "@/config";
+import { API_URL } from "@/config";
 import { sleep } from "@/utils";
 
-const http = axios.create({ baseURL: VITE_API_URL });
+const http = axios.create({ baseURL: API_URL });
 
 const getToken = () => {
   if (typeof window === "undefined") return;

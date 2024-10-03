@@ -1,4 +1,4 @@
-import { VITE_API_URL } from "@/config";
+import { API_URL } from "@/config";
 import { ServiceRecord } from "@/types";
 
 export const sleep = (ms: number) => {
@@ -17,7 +17,7 @@ export const generateKey = (len?: number) => {
 };
 
 export const getFileUrl = (file: string) => {
-  return VITE_API_URL + "/files/" + file;
+  return API_URL + "/files/" + file;
 };
 
 export const dateToDefaultValue = (date?: Date | null | string): string => {

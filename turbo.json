@@ -4,8 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["db:generate", "^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "cache": false
+      "inputs": ["$TURBO_DEFAULT$", ".env*"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -18,7 +17,8 @@
       "cache": false
     },
     "db:generate": {
-      "cache": false
+      "cache": false,
+      "persistent": false
     }
   }
 }

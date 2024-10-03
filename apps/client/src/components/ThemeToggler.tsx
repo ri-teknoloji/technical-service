@@ -10,7 +10,7 @@ export const ThemeToggler = () => {
   };
 
   return (
-    <Button onPress={toggleTheme} isIconOnly variant="light">
+    <Button isIconOnly onPress={toggleTheme} variant="light">
       {theme.resolvedTheme === "dark" ? <SunIcon /> : <MoonIcon />}
     </Button>
   );

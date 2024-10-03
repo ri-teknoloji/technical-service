@@ -1,16 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 
 @Injectable()
-export class PrismaService extends PrismaClient {
-  constructor(private config: ConfigService) {
-    super({
-      datasources: {
-        db: {
-          url: config.get<string>("DATABASE_URL"),
-        },
-      },
-    });
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  async onModuleInit() {
+    await this.$connect();
+    Logger.log("Connected to the database", "PrismaService");
   }
 }

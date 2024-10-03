@@ -1,24 +1,25 @@
-import { useHttp } from "@/hooks/useHttp";
-import { Event, ServiceRecord } from "@/types";
-import { getFileUrl, translateRecordStatus } from "@/utils";
 import {
   Card,
   CardBody,
+  CardHeader,
+  cn,
   getKeyValue,
+  Input,
+  Table,
   TableBody,
   TableCell,
   TableColumn,
   TableHeader,
   TableRow,
-  Table,
-  CardHeader,
-  Input,
-  cn,
 } from "@nextui-org/react";
 import { CheckIcon } from "lucide-react";
 import { Key } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
+import useSWR from "swr";
+
+import { Event, ServiceRecord } from "@/types";
+import { getFileUrl, translateRecordStatus } from "@/utils";
 
 const Title = ({ title }: { title: string }) => {
   return (
@@ -30,7 +31,7 @@ const Title = ({ title }: { title: string }) => {
 
 const ViewRecord = () => {
   const { recordId } = useParams<{ recordId: string }>();
-  const { data: record } = useHttp<ServiceRecord>(`/records/${recordId}`);
+  const { data: record } = useSWR<ServiceRecord>(`/records/${recordId}`);
 
   if (!record) return "Yükleniyor...";
 
@@ -60,24 +61,24 @@ const DisplayDetails = ({ record }: DisplayDetailsProps) => {
       <Title title="Detaylar" />
       <CardBody className="grid grid-cols-12 gap-3">
         <Input
+          className="col-span-12 md:col-span-6"
           label="Ürün Adı"
           value={record.productName}
-          className="col-span-12 md:col-span-6"
         />
         <Input
+          className="col-span-12 md:col-span-6"
           label="Servis Durumu"
           value={translateRecordStatus(record.status)}
-          className="col-span-12 md:col-span-6"
         />
         <Input
+          className="col-span-12 md:col-span-6"
           label="Kayıt Tarihi"
           value={new Date(record.createdAt).toLocaleString()}
-          className="col-span-12 md:col-span-6"
         />
         <Input
+          className="col-span-12 md:col-span-6"
           label="Güncellenme Tarihi"
           value={new Date(record.updatedAt).toLocaleString()}
-          className="col-span-12 md:col-span-6"
         />
       </CardBody>
     </Card>
@@ -96,14 +97,14 @@ const ImagesShowcase = ({ images }: ImagesShowcaseProps) => {
         <div className="grid grid-cols-12 gap-3">
           {images.map((image, index) => (
             <div
-              key={index}
               className="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3"
+              key={index}
             >
               <img
-                src={getFileUrl(image)}
                 alt=""
                 className="h-40 w-full rounded-md object-fill"
                 onClick={() => window.open(getFileUrl(image), "_blank")}
+                src={getFileUrl(image)}
               />
             </div>
           ))}
@@ -115,7 +116,7 @@ const ImagesShowcase = ({ images }: ImagesShowcaseProps) => {
 
 const EventsTable = () => {
   const { recordId } = useParams<{ recordId: string }>();
-  const { data: events } = useHttp<Event[]>(`/records/${recordId}/events`);
+  const { data: events } = useSWR<Event[]>(`/records/${recordId}/events`);
 
   if (!events) return "Yükleniyor...";
 
@@ -144,12 +145,12 @@ const EventsTable = () => {
 
   const rows = events.map((event) => ({
     ...event,
-    key: event.id,
+    createdAt: new Date(event.createdAt).toLocaleString(),
     description:
       event.description.length > 50
         ? `${event.description.slice(0, 50)}...`
         : event.description,
-    createdAt: new Date(event.createdAt).toLocaleString(),
+    key: event.id,
   }));
 
   const lastEvent = events[events.length - 1];
@@ -166,10 +167,10 @@ const EventsTable = () => {
       </CardBody>
       <Table
         aria-label="Example table with dynamic content"
-        isStriped
-        selectionMode="single"
         className="overflow-auto"
+        isStriped
         onRowAction={handleRowAction}
+        selectionMode="single"
       >
         <TableHeader columns={columns}>
           {(column) => (
@@ -223,7 +224,6 @@ const Stepper = ({ status }: StepperProps) => {
         <div className="grid grid-cols-12 place-items-center gap-5">
           {steps.map((step, index) => (
             <div
-              key={step.key}
               className={
                 (cn(
                   `flex items-center gap-3 ${
@@ -232,6 +232,7 @@ const Stepper = ({ status }: StepperProps) => {
                 ),
                 "col-span-12 md:col-span-3")
               }
+              key={step.key}
             >
               <div
                 className={`mx-auto flex h-10 w-10 items-center justify-center rounded-full border-2 ${
@@ -241,7 +242,7 @@ const Stepper = ({ status }: StepperProps) => {
                 }`}
               >
                 {index <= currentStep ? (
-                  <CheckIcon size={20} className="text-white" />
+                  <CheckIcon className="text-white" size={20} />
                 ) : (
                   <span>{index + 1}</span>
                 )}
@@ -264,9 +265,9 @@ const Navbar = () => {
         <div className="flex items-center justify-between gap-3">
           <div className="flex cursor-pointer items-center gap-3">
             <img
-              src="/logo.png"
               alt=""
               className="h-10 w-10 rounded-full object-cover"
+              src="/logo.png"
             />
             <h1 className="text-2xl font-bold">YAYPEL</h1>
           </div>

@@ -1,4 +1,4 @@
-import config from "@/config";
+import { VITE_API_URL } from "@/config";
 import { ServiceRecord } from "@/types";
 
 export const sleep = (ms: number) => {
@@ -17,23 +17,28 @@ export const generateKey = (len?: number) => {
 };
 
 export const getFileUrl = (file: string) => {
-  return config.BACKEND + "/api/files/" + file;
+  return VITE_API_URL + "/files/" + file;
+};
+
+export const dateToDefaultValue = (date?: Date | null | string): string => {
+  if (!date) return "";
+  return new Date(date).toISOString().split("T")[0];
 };
 
 export const translateRecordStatus = (status: ServiceRecord["status"]) => {
   switch (status) {
-    case "pending":
-      return "Beklemede";
-    case "waiting_for_parts":
-      return "Parça Tedarik Ediliyor";
-    case "in_progress":
-      return "Devam Ediyor";
     case "completed":
       return "Tamamlandı";
-    case "shipped":
-      return "Kargolandı";
     case "delivered":
       return "Teslim Edildi";
+    case "in_progress":
+      return "Devam Ediyor";
+    case "pending":
+      return "Beklemede";
+    case "shipped":
+      return "Kargolandı";
+    case "waiting_for_parts":
+      return "Parça Tedarik Ediliyor";
     default:
       return "Bilinmiyor";
   }

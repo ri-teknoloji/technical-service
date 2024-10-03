@@ -9,19 +9,18 @@ import {
 
 export class LoginDto {
   @ApiProperty()
-  @IsString()
-  username: string;
-
-  @ApiProperty()
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty()
+  @IsString()
+  username: string;
 }
 
 export class RegisterDto {
   @ApiProperty()
   @IsString()
-  @IsOptional()
-  username: string;
+  displayName: string;
 
   @ApiProperty({
     example: "test@example.com",
@@ -34,10 +33,11 @@ export class RegisterDto {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty()
-  @IsString()
-  displayName: string;
-
   @IsPhoneNumber("TR")
   phoneNumber: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  username: string;
 }

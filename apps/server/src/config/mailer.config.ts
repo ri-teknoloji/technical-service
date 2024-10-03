@@ -1,26 +1,25 @@
-import { MailerOptions } from "@nestjs-modules/mailer";
-import { EjsAdapter } from "@nestjs-modules/mailer/dist/adapters/ejs.adapter";
+import { type MailerOptions } from "@nestjs-modules/mailer";
+import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 
 export const mailerConfig: MailerOptions = {
-  transport: {
-    host: process.env.SMTP_HOST,
-    port: 465,
-    secure: true,
-    ignoreTLS: true,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  },
   defaults: {
-    from: `"No Reply" <${process.env.SMTP_USER}>`,
+    from: `"nest-modules" <${process.env.MAILER_USER}>`,
   },
-  preview: true,
   template: {
-    dir: process.cwd() + "/templates/",
-    adapter: new EjsAdapter(),
+    adapter: new HandlebarsAdapter(),
+    dir: process.cwd() + "/src/templates/email/",
     options: {
       strict: true,
     },
   },
+  transport: {
+    auth: {
+      pass: process.env.MAILER_PASS,
+      user: process.env.MAILER_USER,
+    },
+    host: process.env.MAILER_HOST,
+    port: +process.env.MAILER_PORT || 465,
+    secure: true,
+  },
+  verifyTransporters: true,
 };

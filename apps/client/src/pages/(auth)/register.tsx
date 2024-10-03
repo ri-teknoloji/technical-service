@@ -1,10 +1,11 @@
-import { CenteredCard } from "@/components/CenteredCard";
-import { PasswordInput } from "@/components/PasswordInput";
-import { http, httpError } from "@/lib/http";
-import { useNavigate } from "@/router";
-import { sleep } from "@/utils";
 import { Button, Input } from "@nextui-org/react";
 import { toast } from "sonner";
+
+import { CenteredCard } from "@/components/CenteredCard";
+import { PasswordInput } from "@/components/PasswordInput";
+import http from "@/lib/http";
+import { useNavigate } from "@/router";
+import { sleep } from "@/utils";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,34 +21,34 @@ const Register = () => {
       await sleep(1000);
       navigate("/login");
     } catch (error) {
-      httpError(error);
+      http.handleError(error);
     }
   };
 
   return (
     <CenteredCard>
-      <form onSubmit={handleSubmit} className="grid gap-3">
-        <Input label="Ad Soyad" name="displayName" type="text" isRequired />
+      <form className="grid gap-3" onSubmit={handleSubmit}>
+        <Input isRequired label="Ad Soyad" name="displayName" type="text" />
 
-        <Input label="E-Mail" name="email" type="email" isRequired />
+        <Input isRequired label="E-Mail" name="email" type="email" />
 
         <Input
+          isRequired
           label="Telefon Numarası"
           name="phoneNumber"
           type="text"
-          isRequired
         />
 
-        <PasswordInput label="Şifre" name="password" isRequired />
+        <PasswordInput isRequired label="Şifre" name="password" />
 
-        <Button type="submit" color="primary">
+        <Button color="primary" type="submit">
           Kayıt Ol
         </Button>
       </form>
       <br />
       <p className="text-center">
         Hesabınız var mı?{" "}
-        <button onClick={() => navigate("/login")} className="text-primary">
+        <button className="text-primary" onClick={() => navigate("/login")}>
           Giriş yapın
         </button>
       </p>

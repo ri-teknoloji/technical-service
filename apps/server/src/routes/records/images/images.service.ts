@@ -1,15 +1,14 @@
-import { AWS } from "@/lib/aws";
-import { PrismaService } from "@/prisma";
 import { Injectable, NotFoundException } from "@nestjs/common";
+
+import { S3Service } from "@/aws";
+import { PrismaService } from "@/prisma";
 
 @Injectable()
 export class ImagesService {
-  constructor(private prisma: PrismaService) {}
-
   create = async (recordId: string, files: Express.Multer.File[]) => {
     const fileKeys: string[] = [];
     for (const file of files) {
-      const key = await AWS.uploadFile(file);
+      const key = await this.s3.uploadFile(file);
       fileKeys.push(key);
     }
 
@@ -22,12 +21,12 @@ export class ImagesService {
     if (!record) throw new NotFoundException("Kayıt bulunamadı");
 
     const updatedRecord = await this.prisma.serviceRecord.update({
-      where: {
-        id: recordId,
-      },
       data: {
         ...record,
         images: [...record.images, ...fileKeys],
+      },
+      where: {
+        id: recordId,
       },
     });
 
@@ -44,17 +43,22 @@ export class ImagesService {
     if (!record) throw new NotFoundException("Kayıt bulunamadı");
 
     const updatedRecord = await this.prisma.serviceRecord.update({
-      where: {
-        id: recordId,
-      },
       data: {
         ...record,
         images: record.images.filter((key) => key !== imageKey),
       },
+      where: {
+        id: recordId,
+      },
     });
 
-    await AWS.deleteFile(imageKey);
+    await this.s3.deleteFile(imageKey);
 
     return updatedRecord;
   };
+
+  constructor(
+    private prisma: PrismaService,
+    private s3: S3Service
+  ) {}
 }

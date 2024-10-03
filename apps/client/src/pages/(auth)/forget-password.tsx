@@ -1,9 +1,10 @@
-import { CenteredCard } from "@/components/CenteredCard";
-import { http, httpError } from "@/lib/http";
-import { sleep } from "@/utils";
 import { Button, Divider, Input } from "@nextui-org/react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+
+import { CenteredCard } from "@/components/CenteredCard";
+import http from "@/lib/http";
+import { sleep } from "@/utils";
 
 const ForgetPassword = () => {
   const navigate = useNavigate();
@@ -21,34 +22,34 @@ const ForgetPassword = () => {
       await sleep(3000);
       navigate("/reset-password");
     } catch (error) {
-      httpError(error);
+      http.handleError(error);
     }
   };
 
   return (
     <CenteredCard>
-      <form onSubmit={handleSubmit} className="grid gap-3">
+      <form className="grid gap-3" onSubmit={handleSubmit}>
         <Input
+          isRequired
           label="Mail / Kullanıcı Adı"
           name="username"
-          type="text"
           placeholder="Mail / Kullanıcı Adı"
-          isRequired
+          type="text"
         />
 
-        <Button type="submit" color="primary">
+        <Button color="primary" type="submit">
           Kod Gönder
         </Button>
       </form>
       <Divider className="my-5" />
       <div className="grid gap-3">
-        <Button as={Link} to={"/login"} color="secondary" variant="light">
+        <Button as={Link} color="secondary" to={"/login"} variant="light">
           <strong>Giriş Yap</strong>
         </Button>
         <Button
           as={Link}
-          to={"/reset-password"}
           color="secondary"
+          to={"/reset-password"}
           variant="light"
         >
           <strong>SMS Kodum var</strong>

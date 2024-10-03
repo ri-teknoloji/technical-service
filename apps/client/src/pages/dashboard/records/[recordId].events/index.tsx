@@ -1,6 +1,3 @@
-import { Loading } from "@/components/Loading";
-import { useHttp } from "@/hooks/useHttp";
-import { Event } from "@/types";
 import {
   Button,
   Card,
@@ -16,12 +13,16 @@ import {
 import { PlusIcon, SearchIcon } from "lucide-react";
 import { Key, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import useSWR from "swr";
+
+import { Loading } from "@/components/Loading";
+import { Event } from "@/types";
 
 const RecordEvents = () => {
   const navigate = useNavigate();
   const { recordId } = useParams<{ recordId: string }>();
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
-  const { data: events } = useHttp<Event[]>(`/records/${recordId}/events`);
+  const { data: events } = useSWR<Event[]>(`/records/${recordId}/events`);
 
   useEffect(() => {
     if (!events) return;
@@ -55,10 +56,10 @@ const RecordEvents = () => {
 
   const rows = filteredEvents.map((event) => {
     return {
+      date: new Date(event.createdAt).toLocaleString(),
+      description: event.description,
       key: event.id,
       title: event.title,
-      description: event.description,
-      date: new Date(event.createdAt).toLocaleString(),
     };
   });
 
@@ -73,9 +74,9 @@ const RecordEvents = () => {
           <h1 className="text-lg font-bold">Olaylar</h1>
           <div>
             <Input
+              onChange={handleSearch}
               placeholder="Ara..."
               startContent={<SearchIcon size={20} />}
-              onChange={handleSearch}
               variant="faded"
             />
           </div>
@@ -86,10 +87,6 @@ const RecordEvents = () => {
       </div>
       <Table
         aria-label="Example table with dynamic content"
-        isStriped
-        selectionMode="single"
-        onRowAction={handleRowAction}
-        className="overflow-auto"
         bottomContent={
           <p className="text-center font-normal">
             Filtrelenmiş
@@ -99,6 +96,10 @@ const RecordEvents = () => {
             adet sonuç gösteriliyor
           </p>
         }
+        className="overflow-auto"
+        isStriped
+        onRowAction={handleRowAction}
+        selectionMode="single"
       >
         <TableHeader columns={columns}>
           {(column) => (
@@ -126,9 +127,9 @@ const AddItem = () => {
   return (
     <Button
       as={Link}
-      to={`/dashboard/records/${recordId}/events/new`}
       color="primary"
       startContent={<PlusIcon />}
+      to={`/dashboard/records/${recordId}/events/new`}
     >
       <strong className="mt-1">Yeni Olay Ekle</strong>
     </Button>

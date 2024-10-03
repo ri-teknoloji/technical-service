@@ -1,6 +1,7 @@
-import { CenteredCard } from "@/components/CenteredCard";
 import { Button } from "@nextui-org/react";
 import { Link } from "react-router-dom";
+
+import { CenteredCard } from "@/components/CenteredCard";
 
 const Forbidden = () => {
   return (
@@ -10,7 +11,7 @@ const Forbidden = () => {
           You are not allowed to access this page.
         </h1>
         <div className="flex justify-center">
-          <Button as={Link} to={"/"} color="primary">
+          <Button as={Link} color="primary" to={"/"}>
             <strong>Go Home</strong>
           </Button>
         </div>

@@ -4,15 +4,20 @@ import {
   Param,
   Post,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ImagesService } from "./images.service";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { Roles } from "@/decorators";
-import { UserRole } from "@/enums";
+import { UserRole } from "@prisma/client";
+
+import { Roles } from "@/common/decorators";
+import { AuthGuard } from "@/common/guards";
+
+import { ImagesService } from "./images.service";
 
 @Controller("records/:recordId/images")
-@Roles([UserRole.Admin])
+@UseGuards(AuthGuard)
+@Roles([UserRole.admin])
 export class ImagesController {
   constructor(private imagesService: ImagesService) {}
 
@@ -26,7 +31,7 @@ export class ImagesController {
   }
 
   @Delete(":id")
-  remove(@Param() { recordId, id }: { recordId: string; id: string }) {
+  remove(@Param() { id, recordId }: { id: string; recordId: string }) {
     return this.imagesService.delete(recordId, id);
   }
 }

@@ -1,3 +1,2 @@
-export * from "./ErrorBoundary"
-export * from "./Toaster"
-export * from "./ThemeToggler"
+export * from "./ErrorBoundary";
+export * from "./ThemeToggler";

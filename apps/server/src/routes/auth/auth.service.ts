@@ -1,15 +1,46 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { LoginDto, RegisterDto } from "./auth.dto";
-import { PrismaService } from "src/prisma";
 import * as argon from "argon2";
-import { sendSMS } from "@/lib/netgsm";
+
+import { NetgsmService } from "@/netgsm";
+import { PrismaService } from "@/prisma";
+
+import { LoginDto, RegisterDto } from "./auth.dto";
 
 @Injectable()
 export class AuthService {
   private passwordTokens = new Map<string, string>();
-  constructor(private prisma: PrismaService) {}
 
-  login = async (body: LoginDto) => {
+  constructor(
+    private prisma: PrismaService,
+    private netgsm: NetgsmService
+  ) {}
+
+  async forgetPassword(username: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ username }, { email: username }],
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+
+    // send sms or email 8 digit numeric code
+    const token = Math.floor(10000000 + Math.random() * 90000000).toString();
+    this.passwordTokens.set(token, user.id);
+
+    await this.netgsm.sendSMS(user.phoneNumber, {
+      context: {
+        token,
+      },
+      template: "forget-password",
+    });
+
+    return true;
+  }
+
+  async login(body: LoginDto) {
     // find user by email or username
     const user = await this.prisma.user.findFirst({
       where: {
@@ -30,8 +61,8 @@ export class AuthService {
 
     const freshToken = await this.prisma.token.create({
       data: {
-        userId: user.id,
         expiresAt: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+        userId: user.id,
       },
     });
 
@@ -39,9 +70,9 @@ export class AuthService {
       ...user,
       token: freshToken.token,
     };
-  };
+  }
 
-  register = async (body: RegisterDto) => {
+  async register(body: RegisterDto) {
     const isExist = await this.prisma.user.findFirst({
       where: {
         OR: [{ username: body.username }, { email: body.email }],
@@ -60,45 +91,25 @@ export class AuthService {
     });
 
     return user;
-  };
+  }
 
-  forgetPassword = async (username: string) => {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        OR: [{ username }, { email: username }],
-      },
-    });
-
-    if (!user) {
-      throw new BadRequestException("User not found");
-    }
-
-    // send sms or email 8 digit numeric code
-    const token = Math.floor(10000000 + Math.random() * 90000000).toString();
-    this.passwordTokens.set(token, user.id);
-
-    await sendSMS(user.phoneNumber, `Şifrenizi sıfırlamak için kod: ${token}`);
-
-    return true;
-  };
-
-  resetPassword = async (token: string, password: string) => {
+  async resetPassword(token: string, password: string) {
     const userId = this.passwordTokens.get(token);
     if (!userId) {
       throw new BadRequestException("Invalid token");
     }
 
     await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
       data: {
         password: await argon.hash(password),
+      },
+      where: {
+        id: userId,
       },
     });
 
     this.passwordTokens.delete(token);
 
     return true;
-  };
+  }
 }

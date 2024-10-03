@@ -1,55 +1,35 @@
-import { Module } from "@nestjs/common";
-import { ServeStaticModule } from "@nestjs/serve-static";
-import { ConfigModule } from "@nestjs/config";
-import { ThrottlerModule } from "@nestjs/throttler";
-import { APP_GUARD } from "@nestjs/core";
-import { RolesGuard } from "@/guards";
-import { PrismaModule } from "@/prisma";
-import { mailerConfig } from "@/config";
-import { MailerModule } from "@nestjs-modules/mailer";
-import { join } from "path";
-import { ApiModule } from "@/routes/api";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { MulterModule } from "@nestjs/platform-express";
-import multer from "multer";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { ThrottlerModule } from "@nestjs/throttler";
 
-const clientDist = join(
-  __dirname,
-  "..",
-  "..",
-  "..",
-  "..",
-  "..",
-  "apps",
-  "client",
-  "dist"
-);
+import { AwsModule } from "@/aws";
+import { AuthMiddleware, LoggerMiddleware } from "@/common/middlewares";
+import { multerConfig, serveStaticConfig, throttlerConfig } from "@/config";
+import { NetgsmModule } from "@/netgsm";
+import { PrismaModule } from "@/prisma";
+
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+// Routes
+import * as Routes from "@/routes";
+const routes = Object.values(Routes);
 
 @Module({
+  controllers: [AppController],
   imports: [
-    ServeStaticModule.forRoot({
-      rootPath: clientDist,
-    }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60,
-        limit: 10,
-      },
-    ]),
+    ...routes,
     PrismaModule,
-    MailerModule.forRoot(mailerConfig),
-    MulterModule.register({
-      storage: multer.memoryStorage(),
-    }),
-    ApiModule,
+    AwsModule,
+    NetgsmModule,
+    ThrottlerModule.forRoot(throttlerConfig),
+    ServeStaticModule.forRoot(serveStaticConfig),
+    MulterModule.register(multerConfig),
   ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
-  ],
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware, AuthMiddleware).forRoutes("*");
+  }
+}

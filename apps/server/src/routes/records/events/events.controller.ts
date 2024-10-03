@@ -1,22 +1,32 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Put,
-  Delete,
-  Param,
-  Body,
   UseGuards,
 } from "@nestjs/common";
-import { EventsService } from "./events.service";
-import { Roles } from "@/decorators";
-import { UserRole } from "@/enums";
-import { AuthGuard, RolesGuard } from "@/guards";
+
+import { Roles } from "@/common/decorators";
+import { AuthGuard } from "@/common/guards";
+import { UserRole } from "@/prisma";
+
 import { CreateEventDto, UpdateEventDto } from "./events.dto";
+import { EventsService } from "./events.service";
 
 @Controller("records/:recordId/events")
+@UseGuards(AuthGuard)
 export class EventsController {
   constructor(private eventsService: EventsService) {}
+
+  @Post()
+  @UseGuards(AuthGuard)
+  @Roles([UserRole.admin])
+  create(@Param("recordId") recordId: string, @Body() data: CreateEventDto) {
+    return this.eventsService.create(recordId, data);
+  }
 
   @Get()
   find(@Param("recordId") recordId: string) {
@@ -31,31 +41,24 @@ export class EventsController {
     return this.eventsService.findOne(recordId, eventId);
   }
 
-  @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles([UserRole.Admin])
-  create(@Param("recordId") recordId: string, @Body() data: CreateEventDto) {
-    return this.eventsService.create(recordId, data);
+  @Delete(":eventId")
+  @UseGuards(AuthGuard)
+  @Roles([UserRole.admin])
+  remove(
+    @Param("recordId") recordId: string,
+    @Param("eventId") eventId: string
+  ) {
+    return this.eventsService.remove(recordId, eventId);
   }
 
   @Put(":eventId")
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles([UserRole.Admin])
+  @UseGuards(AuthGuard)
+  @Roles([UserRole.admin])
   update(
     @Param("recordId") recordId: string,
     @Param("eventId") eventId: string,
     @Body() data: UpdateEventDto
   ) {
     return this.eventsService.update(recordId, eventId, data);
-  }
-
-  @Delete(":eventId")
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles([UserRole.Admin])
-  remove(
-    @Param("recordId") recordId: string,
-    @Param("eventId") eventId: string
-  ) {
-    return this.eventsService.remove(recordId, eventId);
   }
 }

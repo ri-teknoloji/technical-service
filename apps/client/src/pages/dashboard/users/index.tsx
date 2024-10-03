@@ -1,27 +1,28 @@
-import { Loading } from "@/components/Loading";
-import { useHttp } from "@/hooks/useHttp";
-import { User } from "@/types";
 import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
+  Button,
+  Card,
   getKeyValue,
   Input,
-  Card,
-  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
 } from "@nextui-org/react";
 import { PlusIcon, SearchIcon } from "lucide-react";
 import { Key, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import useSWR from "swr";
+
+import { Loading } from "@/components/Loading";
+import { User } from "@/types";
 
 const Users = () => {
   const navigate = useNavigate();
 
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const { data: users } = useHttp<User[]>("/users");
+  const { data: users } = useSWR<User[]>("/users");
 
   useEffect(() => {
     if (!users) return;
@@ -51,9 +52,9 @@ const Users = () => {
 
   const rows = filteredUsers.map((user) => {
     return {
-      key: user.id,
       displayName: user.displayName,
       email: user.email,
+      key: user.id,
       phoneNumber: user.phoneNumber,
       roles: user.roles.join(", "),
     };
@@ -81,9 +82,9 @@ const Users = () => {
           <h1 className="text-lg font-bold">Kullanıcılar</h1>
           <div>
             <Input
+              onChange={handleSearch}
               placeholder="Ara..."
               startContent={<SearchIcon size={20} />}
-              onChange={handleSearch}
               variant="faded"
             />
           </div>
@@ -94,10 +95,6 @@ const Users = () => {
       </div>
       <Table
         aria-label="Example table with dynamic content"
-        isStriped
-        selectionMode="single"
-        onRowAction={handleRowAction}
-        className="overflow-auto"
         bottomContent={
           <p className="text-center font-normal">
             Filtrelenmiş
@@ -107,6 +104,10 @@ const Users = () => {
             adet sonuç gösteriliyor
           </p>
         }
+        className="overflow-auto"
+        isStriped
+        onRowAction={handleRowAction}
+        selectionMode="single"
       >
         <TableHeader columns={columns}>
           {(column) => (
@@ -133,9 +134,9 @@ const AddItem = () => {
   return (
     <Button
       as={Link}
-      to={"/dashboard/users/new"}
       color="primary"
       startContent={<PlusIcon />}
+      to={"/dashboard/users/new"}
     >
       <strong className="mt-1">Yeni Kullanıcı Ekle</strong>
     </Button>

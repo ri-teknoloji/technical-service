@@ -1,0 +1,2 @@
+Servisten {{productName}} ürününüzü teslim almak için kodunuz: {{code}}.
+Lütfen bu kodu güvenmeden kimseyle paylaşmayınız.

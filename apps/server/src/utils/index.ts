@@ -12,3 +12,12 @@ export const randomString = (len?: number) => {
   }
   return key;
 };
+
+export const generateTrackingNumber = () => {
+  const date = new Date();
+  const year = date.getFullYear().toString().slice(2);
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const random3Digits = Math.floor(100 + Math.random() * 900);
+  return `${year}${month}${day}${random3Digits}`;
+};

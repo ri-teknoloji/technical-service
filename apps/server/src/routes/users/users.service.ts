@@ -3,40 +3,17 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { PrismaService } from "@/prisma";
 import { User } from "@prisma/client";
-import { CreateUserDto, UpdateUserDto } from "./users.dto";
-import { UserRole } from "@/enums";
 import argon2 from "argon2";
+
+import { UserRole } from "@/prisma";
+import { PrismaService } from "@/prisma";
 import { randomString } from "@/utils";
+
+import { CreateUserDto, UpdateUserDto } from "./users.dto";
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
-
-  find = async (user: User) => {
-    const isAdmin = user.roles.includes(UserRole.Admin);
-    return isAdmin
-      ? await this.prisma.user.findMany()
-      : await this.prisma.user.findMany({ where: { id: user.id } });
-  };
-
-  findOne = async (user: User, id: string) => {
-    const isAdmin = user.roles.includes(UserRole.Admin);
-    const doc = isAdmin
-      ? await this.prisma.user.findFirst({
-          where: { id },
-          include: { ServiceRecord: true, Token: true },
-        })
-      : await this.prisma.user.findFirst({ where: { id: user.id } });
-
-    if (!doc) {
-      throw new NotFoundException("User not found");
-    }
-
-    return doc;
-  };
-
   create = async (data: CreateUserDto) => {
     const isExist = await this.prisma.user.findFirst({
       where: {
@@ -60,6 +37,44 @@ export class UsersService {
     return user;
   };
 
+  find = async (user: User) => {
+    const isAdmin = user.roles.includes(UserRole.admin);
+    return isAdmin
+      ? await this.prisma.user.findMany()
+      : await this.prisma.user.findMany({ where: { id: user.id } });
+  };
+
+  findOne = async (user: User, id: string) => {
+    const isAdmin = user.roles.includes(UserRole.admin);
+    const doc = isAdmin
+      ? await this.prisma.user.findFirst({
+          include: { ServiceRecord: true, Token: true },
+          where: { id },
+        })
+      : await this.prisma.user.findFirst({ where: { id: user.id } });
+
+    if (!doc) {
+      throw new NotFoundException("User not found");
+    }
+
+    return doc;
+  };
+
+  remove = async (user: User, id: string) => {
+    const isAdmin = user.roles.includes(UserRole.admin);
+
+    const isExist = await this.prisma.user.findFirst({ where: { id } });
+    if (!isExist) {
+      throw new NotFoundException("User not found");
+    }
+
+    await (isAdmin
+      ? this.prisma.user.delete({ where: { id } })
+      : this.prisma.user.delete({ where: { id: user.id } }));
+
+    return true;
+  };
+
   update = async (id: string, data: UpdateUserDto) => {
     const isExist = await this.prisma.user.findFirst({ where: { id } });
     if (!isExist) {
@@ -68,8 +83,8 @@ export class UsersService {
 
     const isCredentialsAvailable = await this.prisma.user.findFirst({
       where: {
-        OR: [{ username: data.username }, { email: data.email }],
         NOT: { id },
+        OR: [{ username: data.username }, { email: data.email }],
       },
     });
 
@@ -83,23 +98,10 @@ export class UsersService {
       delete data.password;
     }
 
-    const user = await this.prisma.user.update({ where: { id }, data });
+    const user = await this.prisma.user.update({ data, where: { id } });
 
     return user;
   };
 
-  remove = async (user: User, id: string) => {
-    const isAdmin = user.roles.includes(UserRole.Admin);
-
-    const isExist = await this.prisma.user.findFirst({ where: { id } });
-    if (!isExist) {
-      throw new NotFoundException("User not found");
-    }
-
-    await (isAdmin
-      ? this.prisma.user.delete({ where: { id } })
-      : this.prisma.user.delete({ where: { id: user.id } }));
-
-    return true;
-  };
+  constructor(private prisma: PrismaService) {}
 }

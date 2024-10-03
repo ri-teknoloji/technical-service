@@ -1,27 +1,28 @@
-import "dotenv/config";
+import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import "dotenv/config";
+
+import { CustomValidationPipe } from "@/common/pipes";
+import { config, swagger } from "@/config";
 import { AppModule } from "@/routes/app";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    cors: {
-      origin: "*",
-    },
+    cors: true,
   });
 
   app.setGlobalPrefix("api");
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
-  const config = new DocumentBuilder()
-    .setTitle("API EXAMPLE")
-    .setDescription("The API description")
-    .setVersion("1.0")
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("api/swagger", app, document);
+  await swagger(app);
 
-  await app.listen(8000);
+  app.useGlobalPipes(
+    new CustomValidationPipe({ transform: true, whitelist: true })
+  );
+
+  await app.listen(config.port);
+
+  const url = (await app.getUrl()).replace("[::1]", "localhost");
+
+  Logger.log(`Server running on ${url}`, "Bootstrap");
 }
 bootstrap();

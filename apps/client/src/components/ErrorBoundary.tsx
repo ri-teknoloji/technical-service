@@ -1,6 +1,7 @@
+import { Button } from "@nextui-org/react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Outlet } from "react-router-dom";
-import { Button } from "@nextui-org/react";
+
 import { CenteredCard } from "./CenteredCard";
 
 function fallbackRender({
@@ -17,15 +18,15 @@ function fallbackRender({
         There was an error while rendering this component.
       </p>
       <br />
-      <pre style={{ whiteSpace: "normal" }} className="text-sm text-red-500">
+      <pre className="text-sm text-red-500" style={{ whiteSpace: "normal" }}>
         {error.message}
       </pre>
       <br />
       <Button
-        onClick={resetErrorBoundary}
-        color="danger"
-        size="sm"
         className="w-full"
+        color="danger"
+        onClick={resetErrorBoundary}
+        size="sm"
       >
         Reload
       </Button>

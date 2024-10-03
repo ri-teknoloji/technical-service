@@ -1,33 +1,35 @@
-import { Loading } from "@/components/Loading";
-import { useHttp } from "@/hooks/useHttp";
-import { http, httpError } from "@/lib/http";
-import { Event } from "@/types";
-import { sleep } from "@/utils";
 import { Button, Card, Input } from "@nextui-org/react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import useSWR from "swr";
+
+import { Loading } from "@/components/Loading";
+import http from "@/lib/http";
+import { Event } from "@/types";
+import { sleep } from "@/utils";
 
 const CreateOrViewEvent = () => {
   const navigate = useNavigate();
-  const { recordId, eventId } = useParams<{
-    recordId: string;
+  const { eventId, recordId } = useParams<{
     eventId: string;
+    recordId: string;
   }>();
 
   const isNew = eventId === "new";
-  const { data: event, isLoading } = useHttp<Event>(
+  const { data: event, isLoading } = useSWR<Event>(
     isNew ? "" : `/records/${recordId}/events/${eventId}`,
   );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const data: any = Object.fromEntries(formData.entries());
+    const data: Record<string, unknown> = Object.fromEntries(
+      formData.entries(),
+    );
 
     try {
-      isNew
-        ? await http.post(`/records/${recordId}/events`, data)
-        : await http.put(`/records/${recordId}/events/${eventId}`, data);
+      if (isNew) await http.post(`/records/${recordId}/events`, data);
+      else await http.put(`/records/${recordId}/events/${eventId}`, data);
 
       toast.success(
         isNew
@@ -38,7 +40,7 @@ const CreateOrViewEvent = () => {
       await sleep(3000);
       navigate(`/dashboard/records/${recordId}/events`);
     } catch (error) {
-      httpError(error);
+      http.handleError(error);
     }
   };
 
@@ -49,26 +51,26 @@ const CreateOrViewEvent = () => {
       <h1 className="mb-3 text-2xl font-semibold">
         {isNew ? "Yeni Etkinlik" : "Etkinliği Görüntüle"}
       </h1>
-      <form onSubmit={handleSubmit} className="grid grid-cols-12 gap-3">
+      <form className="grid grid-cols-12 gap-3" onSubmit={handleSubmit}>
         <Input
-          label="Etkinlik Adı"
-          name="title"
-          type="text"
           className="col-span-12 md:col-span-6"
           defaultValue={event?.title}
           isRequired
+          label="Etkinlik Adı"
+          name="title"
+          type="text"
         />
         <Input
-          label="Açıklama"
-          name="description"
-          type="text"
           className="col-span-12 md:col-span-6"
           defaultValue={event?.description}
           isRequired
+          label="Açıklama"
+          name="description"
+          type="text"
         />
 
         <div className="col-span-12">
-          <Button type="submit" color="primary">
+          <Button color="primary" type="submit">
             {isNew ? "Oluştur" : "Güncelle"}
           </Button>
         </div>

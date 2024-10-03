@@ -1,21 +1,10 @@
-import { ThemeToggler } from "@/components";
-import { sidebarItems } from "@/data";
-import { useHttp } from "@/hooks/useHttp";
-import { useViewport } from "@/hooks/useViewport";
-import { User } from "@/types";
-import {
-  Button,
-  Card,
-  cn,
-  Divider,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from "@nextui-org/react";
-import { MenuIcon, UserIcon } from "lucide-react";
+import { cn } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+
+import { useViewport } from "@/hooks";
+
+import { Footer, Navbar, Sidebar } from "./_components";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -77,106 +66,3 @@ const Layout = () => {
 };
 
 export default Layout;
-
-interface SidebarProps {
-  toggleSidebar: () => void;
-}
-
-const Sidebar = ({ toggleSidebar }: SidebarProps) => {
-  return (
-    <Card className="h-full min-h-screen p-3" radius="none">
-      <div className="flex h-10 justify-between">
-        <div className="flex w-full items-center">
-          <h1 className="text-xl font-bold">Dashboard</h1>
-        </div>
-        <div className="block md:hidden">
-          <SidebarToggler toggleSidebar={toggleSidebar} />
-        </div>
-      </div>
-      <Divider className="my-3" />
-      <div className="grid gap-1">
-        {sidebarItems.map((item, index) => (
-          <Button
-            key={index}
-            as={Link}
-            to={item.href}
-            startContent={<item.icon size={20} />}
-            className="justify-start"
-            variant="light"
-            radius="none"
-          >
-            <div className="mt-1">
-              <strong>{item.label}</strong>
-            </div>
-          </Button>
-        ))}
-      </div>
-    </Card>
-  );
-};
-
-interface NavbarProps {
-  toggleSidebar: () => void;
-}
-const Navbar = ({ toggleSidebar }: NavbarProps) => {
-  return (
-    <Card className="p-3" radius="none">
-      <div className="flex justify-between gap-3">
-        <SidebarToggler toggleSidebar={toggleSidebar} />
-        <div className="flex items-center gap-3">
-          <ThemeToggler />
-          <UserDisplay />
-        </div>
-      </div>
-    </Card>
-  );
-};
-
-const Footer = () => {
-  return (
-    <Card className="p-3" radius="none">
-      <div className="flex justify-between">
-        <p>
-          <strong>Yönetim Paneli</strong>
-        </p>
-        <p>
-          <strong>Version:</strong> 1.0.0
-        </p>
-      </div>
-    </Card>
-  );
-};
-
-const SidebarToggler = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
-  return (
-    <Button onClick={toggleSidebar} variant="light" isIconOnly>
-      <MenuIcon size={20} />
-    </Button>
-  );
-};
-
-const UserDisplay = () => {
-  const { data: me } = useHttp<User>("/auth/me");
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    location.reload();
-  };
-
-  if (!me) return null;
-
-  return (
-    <Dropdown>
-      <DropdownTrigger>
-        <Button startContent={<UserIcon />} variant="faded">
-          <strong className="mt-1">{me.displayName}</strong>
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu aria-label="Static Actions">
-        <DropdownItem onPress={logout} color="danger">
-          Çıkış Yap
-        </DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
-  );
-};

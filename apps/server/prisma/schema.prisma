@@ -73,23 +73,30 @@ enum ServiceRecordStatus {
 }
 
 model ServiceRecord {
-    id                  String              @id @default(uuid())
+    id             String              @id @default(uuid())
+    description    String
+    images         String[]
+    requiredParts  String[]            @default([])
+    status         ServiceRecordStatus @default(pending)
+    events         Event[]
+    trackingNumber String?             @unique
+
     productName         String
     productImeiNumber   String?
     productSerialNumber String?
-    description         String
-    images              String[]
-    requiredParts       String[]            @default([])
-    status              ServiceRecordStatus @default(pending)
-    events              Event[]
-    createdAt           DateTime            @default(now())
-    updatedAt           DateTime            @updatedAt
-    userId              String
-    User                User                @relation(name: "ServiceRecordUser", fields: [userId], references: [id])
-    technicianId        String
-    Technician          User                @relation(name: "ServiceRecordTechnician", fields: [technicianId], references: [id])
-    estimatedDelivery   DateTime
-    estimatedCost       Float
+
+    userId            String
+    User              User      @relation(name: "ServiceRecordUser", fields: [userId], references: [id])
+    technicianId      String
+    Technician        User      @relation(name: "ServiceRecordTechnician", fields: [technicianId], references: [id])
+    estimatedDelivery DateTime?
+    estimatedCost     Float?
+
+    warrantyEndDate      DateTime?
+    appleWarrantyEndDate DateTime?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@map("service_records")
 }

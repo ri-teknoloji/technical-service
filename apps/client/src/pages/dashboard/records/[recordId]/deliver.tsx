@@ -1,7 +1,3 @@
-import { useHttp } from "@/hooks/useHttp";
-import { http, httpError } from "@/lib/http";
-import { ServiceRecord } from "@/types";
-import { sleep } from "@/utils";
 import {
   Button,
   Card,
@@ -12,12 +8,17 @@ import {
 } from "@nextui-org/react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import useSWR from "swr";
+
+import http from "@/lib/http";
+import { ServiceRecord } from "@/types";
+import { sleep } from "@/utils";
 
 const Deliver = () => {
   const navigate = useNavigate();
   const { recordId } = useParams<{ recordId: string }>();
 
-  const { data: record } = useHttp<ServiceRecord>(`/records/${recordId}`);
+  const { data: record } = useSWR<ServiceRecord>(`/records/${recordId}`);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,8 +32,8 @@ const Deliver = () => {
 
       // create new event for record
       await http.post(`/records/${recordId}/events`, {
-        title: "Ürün Teslim edildi",
         description: `Ürün teslim edildi. Teslim alan kişi: ${form.get("receiver")}`,
+        title: "Ürün Teslim edildi",
       });
 
       toast.success("Etkinlik başarıyla oluşturuldu.");
@@ -40,7 +41,7 @@ const Deliver = () => {
       await sleep(3000);
       navigate("/dashboard/records");
     } catch (error) {
-      httpError(error);
+      http.handleError(error);
     }
   };
 
@@ -49,7 +50,7 @@ const Deliver = () => {
       await http.get(`/records/${recordId}/delivery-code`);
       toast.success("Teslimat kodu başarıyla tekrar gönderildi.");
     } catch (error) {
-      httpError(error);
+      http.handleError(error);
     }
   };
 
@@ -68,10 +69,10 @@ const Deliver = () => {
         {record.status === "delivered" ? (
           <p className="text-red-500">Bu ürün daha önce teslim edilmiş.</p>
         ) : (
-          <form onSubmit={handleSubmit} className="grid gap-3">
+          <form className="grid gap-3" onSubmit={handleSubmit}>
             <Input label="Ürünü teslim alan kişi" name="receiver" />
             <Input label="Teslimat Kodu" name="code" />
-            <Button type="submit" color="primary">
+            <Button color="primary" type="submit">
               Teslimatı Onayla
             </Button>
           </form>
@@ -80,9 +81,9 @@ const Deliver = () => {
       <CardFooter>
         <Button
           color="primary"
-          variant="light"
-          onClick={handleResend}
           isDisabled={record.status === "delivered"}
+          onClick={handleResend}
+          variant="light"
         >
           <strong>Teslimat kodunu tekrar gönder</strong>
         </Button>

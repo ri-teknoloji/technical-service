@@ -2,10 +2,10 @@ import { IsString } from "class-validator";
 
 export class CreateEventDto {
   @IsString()
-  title: string;
+  description: string;
 
   @IsString()
-  description: string;
+  title: string;
 }
 
 export class UpdateEventDto extends CreateEventDto {}

@@ -1,0 +1,6 @@
+Sayın {{name}},
+Servis kaydınız oluşturuldu: {{productName}}.
+Takip numaranız: {{trackingNumber}}.
+Detaylar için siteyi ziyaret ediniz.
+
+YAYPEL

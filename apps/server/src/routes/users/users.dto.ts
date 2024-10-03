@@ -3,25 +3,25 @@ import { IsEmail, IsOptional, IsPhoneNumber, IsString } from "class-validator";
 
 export class CreateUserDto {
   @IsString()
-  @IsOptional()
-  username?: string;
+  displayName: string;
 
   @IsEmail()
   @IsOptional()
   email: string;
 
-  @IsPhoneNumber("TR")
-  phoneNumber: string;
-
   @IsString()
   @IsOptional()
   password?: string;
 
-  @IsString()
-  displayName: string;
+  @IsPhoneNumber("TR")
+  phoneNumber: string;
 
   @IsString({ each: true })
   roles: Prisma.UserCreateInput["roles"];
+
+  @IsString()
+  @IsOptional()
+  username?: string;
 }
 
 export class UpdateUserDto extends CreateUserDto {}

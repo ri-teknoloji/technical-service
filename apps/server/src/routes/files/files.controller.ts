@@ -1,12 +1,14 @@
-import { AWS } from "@/lib/aws";
 import { Controller, Get, NotFoundException, Param, Res } from "@nestjs/common";
 import { Response } from "express";
 
+import { S3Service } from "@/aws";
+
 @Controller("files")
 export class FilesController {
+  constructor(private s3: S3Service) {}
   @Get(":key")
   async findOne(@Param("key") key: string, @Res() res: Response) {
-    const file = await AWS.getFile(key);
+    const file = await this.s3.getFile(key);
 
     if (!file) {
       throw new NotFoundException("File not found");
@@ -17,8 +19,8 @@ export class FilesController {
     }
 
     res.set({
-      "Content-Type": file.ContentType,
       "Content-Length": file.ContentLength,
+      "Content-Type": file.ContentType,
       //"Content-Disposition": `attachment; filename="${key}"`, // Makes the browser download the file
     });
 

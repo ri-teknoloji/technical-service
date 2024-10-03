@@ -1,45 +1,57 @@
 import { Prisma } from "@prisma/client";
 import {
+  IsArray,
   IsDateString,
   IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
-  Min,
 } from "class-validator";
 
 export class CreateRecordDto {
-  @IsString()
-  userId: string;
+  @IsDateString()
+  @IsOptional()
+  appleWarrantyEndDate: Date;
 
   @IsString()
-  technicianId: string;
+  description: string;
 
-  @IsString()
-  productName: string;
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  estimatedCost: number;
+
+  @IsDateString()
+  @IsOptional()
+  estimatedDelivery: Date;
 
   @IsString()
   @IsOptional()
   productImeiNumber?: string;
 
   @IsString()
+  productName: string;
+
+  @IsString()
   @IsOptional()
   productSerialNumber?: string;
 
-  @IsString()
-  description: string;
+  @IsArray()
+  @IsString({ each: true })
+  requiredParts: string[];
 
   @IsString()
   status: Prisma.ServiceRecordCreateInput["status"];
 
-  @IsNumber()
-  @Min(0)
-  estimatedCost: number;
+  @IsString()
+  technicianId: string;
+
+  @IsString()
+  userId: string;
 
   @IsDateString()
-  estimatedDelivery: Date;
-
-  @IsString({ each: true })
-  requiredParts: string[];
+  @IsOptional()
+  warrantyEndDate: Date;
 }
 
 export class UpdateRecordDto extends CreateRecordDto {}

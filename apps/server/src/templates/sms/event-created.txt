@@ -1,0 +1,6 @@
+Servisteki {{productName}} ürününüzde güncelleme var.
+Olay: {{event}}.
+Takip numaranız: {{trackingNumber}}.
+Detaylar için siteyi ziyaret edin.
+
+YAYPEL

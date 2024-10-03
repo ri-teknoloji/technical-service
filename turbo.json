@@ -3,8 +3,9 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"]
+      "dependsOn": ["db:generate", "^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "cache": false
     },
     "lint": {
       "dependsOn": ["^lint"]

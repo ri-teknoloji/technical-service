@@ -50,8 +50,8 @@ const CreateOrViewRecord = () => {
 
     data.userId = user.id;
     data.technicianId = technician.id;
-    data.estimatedCost = parseFloat(formData.get("estimatedCost") as string);
-    data.requiredParts = (formData.get("requiredParts") as string).split("\n");
+    data.estimatedCost = parseFloat(data.estimatedCost as string);
+    data.requiredParts = (data.requiredParts as string).split("\n");
 
     if (!data.estimatedDelivery) delete data.estimatedDelivery;
     if (!data.warrantyEndDate) delete data.warrantyEndDate;

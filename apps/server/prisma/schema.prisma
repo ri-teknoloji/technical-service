@@ -67,6 +67,7 @@ enum ServiceRecordStatus {
     completed
     shipped
     delivered
+    cancelled
 }
 
 model ServiceRecord {

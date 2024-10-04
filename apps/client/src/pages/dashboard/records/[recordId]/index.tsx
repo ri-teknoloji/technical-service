@@ -172,6 +172,7 @@ const CreateOrViewRecord = () => {
               <SelectItem key={"completed"}>Tamamlandı</SelectItem>
               <SelectItem key={"shipped"}>Kargoya Verildi</SelectItem>
               <SelectItem key={"delivered"}>Teslim Edildi</SelectItem>
+              <SelectItem key={"cancelled"}>İptal Edildi</SelectItem>
             </Select>
 
             <Input

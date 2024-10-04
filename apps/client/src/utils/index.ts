@@ -27,6 +27,8 @@ export const dateToDefaultValue = (date?: Date | null | string): string => {
 
 export const translateRecordStatus = (status: ServiceRecord["status"]) => {
   switch (status) {
+    case "cancelled":
+      return "İptal Edildi";
     case "completed":
       return "Tamamlandı";
     case "delivered":

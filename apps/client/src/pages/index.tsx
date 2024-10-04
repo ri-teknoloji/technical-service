@@ -8,7 +8,7 @@ const Home = () => {
   return (
     <div className="grid h-screen place-items-center gap-3">
       <Button as={Link} color="primary" size="lg" to={"/dashboard"}>
-        <strong>Dashboard</strong>
+        Dashboard
       </Button>
     </div>
   );
